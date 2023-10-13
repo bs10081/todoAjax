@@ -20,6 +20,7 @@ function addTodo() {
 
 // 刪除待辦事項的函數
 function deleteTodo(id) {
+    console.log('deleteTodo function called with ID:', id);
     // 發送AJAX POST請求到後端，刪除指定的待辦事項
     $.post('/delete_todo', { id: id }, function (data) {
         fetchTodos();  // 重新獲取待辦事項清單
@@ -34,29 +35,32 @@ function fetchTodos() {
         for (let todo of data) {
             if (todo.completed) { // 如果 todo 項目已完成
                 completeHtml += `<li class="collection-item">${todo.text} 
-                                 <a href="#!" class="secondary-content" onclick="deleteTodo(${todo.id})">
-                                     <i class="material-icons red-text">delete</i>
+                                 <a href="#!" class="secondary-content">
+                                     <i class="material-icons red-text delete-todo-btn" data-todo-id="${todo.id}">delete</i>
                                  </a>
-                                 </li>`; // 將已完成的 todo 項目加入 completeHtml 字串
+                                 </li>`;
             } else { // 如果 todo 項目未完成
                 incompleteHtml += `<li class="collection-item">${todo.text} 
                                    <span class="grey-text">(${todo.date})</span>
-                                   <a href="#!" class="secondary-content" onclick="completeTodo(${todo.id})">
-                                       <i class="material-icons green-text">check</i>
+                                   <a href="#!" class="secondary-content">
+                                       <i class="material-icons green-text complete-todo-btn" data-todo-id="${todo.id}">check</i>
                                    </a>
-                                   <a href="#!" class="secondary-content" style="margin-right: 30px;" onclick="deleteTodo(${todo.id})">
-                                       <i class="material-icons red-text">delete</i>
+                                   <a href="#!" class="secondary-content" style="margin-right: 30px;">
+                                       <i class="material-icons red-text delete-todo-btn" data-todo-id="${todo.id}">delete</i>
                                    </a>
-                                   </li>`; // 將未完成的 todo 項目加入 incompleteHtml 字串
+                                   </li>`;
             }
         }
 
-        $('#incompleteTodos').html(incompleteHtml); // 將 incompleteHtml 字串設為 id 為 incompleteTodos 的元素的 HTML 內容
-        $('#completedTodos').html(completeHtml); // 將 completeHtml 字串設為 id 為 completedTodos 的元素的 HTML 內容
+        $('#incompleteTodos').html(incompleteHtml);
+        $('#completedTodos').html(completeHtml);
     });
 }
 
+
+
 function completeTodo(id) {
+    console.log('completeTodo function called with ID:', id);
     $.post('/complete_todo', { id: id }, function (data) {
         fetchTodos(); // 呼叫 fetchTodos 函式更新 todo 清單
     });
@@ -73,8 +77,21 @@ function completeTodo(id) {
     });
 }
 
+// 更新待辦事項的函數，第一個參數為待辦事項的 ID，第二個參數為要更新的欄位，第三個參數為新的值
 function updateTodo(id, field, value) {
     $.post('/update_todo', { id: id, field: field, value: value }, function (data) {
         fetchTodos();
     });
 }
+document.querySelector(".container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("delete-todo-btn")) {
+        console.log("Delete button clicked");
+        deleteTodo(e.target.getAttribute("data-todo-id"));
+    }
+    if (e.target && e.target.classList.contains("complete-todo-btn")) {
+        console.log("Complete button clicked");
+        completeTodo(e.target.getAttribute("data-todo-id"));
+    }
+});
+
+
