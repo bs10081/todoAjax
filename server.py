@@ -1,13 +1,19 @@
-from flask import Flask, request, jsonify
+import datetime
+from flask import Flask, request, jsonify, redirect, url_for
 from flask import send_from_directory
-
+import requests
 
 app = Flask(__name__)
 
-# 初始化待辦事項清單和ID計數器
-todos = []
-id_counter = 1
-
+# Notion configurations
+NOTION_API_KEY = "secret_qWipKJbYLrOfeFo2XPRYzuz6yX2jNp431R8nCpzlAtB"
+NOTION_DATABASE_URL = "https://api.notion.com/v1/databases/b699c73e35614a4cbffa96da27769f3a/query"
+NOTION_DATABASE_ID = "b699c73e35614a4cbffa96da27769f3a"
+HEADERS = {
+    "Authorization": f"Bearer {NOTION_API_KEY}",
+    "Content-Type": "application/json",
+    "Notion-Version": "2021-08-16"
+}
 # 啟動網頁
 
 
@@ -25,75 +31,82 @@ def serve_static(filename):
 
 # 路由和函數來添加新的待辦事項
 
+@app.route('/get_todos', methods=['GET'])
+def get_todos():
+    response = requests.post(NOTION_DATABASE_URL, headers=HEADERS)
+    results = response.json().get('results')
+    todos = [{
+        'id': item['id'],
+        'text': item['properties']['Text']['rich_text'][0]['plain_text'] if item['properties']['Text']['rich_text'] else "",
+        'completed': item['properties']['Completed']['checkbox'],
+        'date': item['properties']['Date']['date']['start'] if item['properties']['Date']['date'] else None,
+        'urgency': item['properties']['Urgency']['select']['name'] if item['properties']['Urgency']['select'] else None
+    } for item in results]
+    return jsonify(todos)
+
 
 @app.route('/add_todo', methods=['POST'])
 def add_todo():
-    global id_counter
+    # Extracting data from the form
     text = request.form.get('text')
-    date = request.form.get('date')
+    date = datetime.datetime.strptime(request.form.get('date'), "%b %d, %Y").date().isoformat()
     urgency = request.form.get('urgency')
 
-    todos.append({
-        'id': id_counter,
-        'text': text,
-        'date': date,
-        'urgency': urgency,
-        'completed': False
-    })
-    id_counter += 1
-    return jsonify(success=True)
+    # Constructing the payload for the Notion API
+    data = {
+        "parent": {"database_id": NOTION_DATABASE_ID},
+        "properties": {
+            "Text": {
+                "type": "rich_text",
+                "rich_text": [{"type": "text", "text": {"content": text}}]
+            },
+            "Date": {
+                "type": "date",
+                "date": {"start": date, "end": None}
+            },
+            "Urgency": {
+                "type": "select",
+                "select": {"name": urgency}
+            },
+            "Completed": {
+                "type": "checkbox",
+                "checkbox": False
+            }
+        }
+    }
 
+    response = requests.post(
+        "https://api.notion.com/v1/pages",
+        headers=HEADERS,
+        json=data
+    )
 
-# 路由和函數來刪除指定的待辦事項
+    # Check if the request was successful
+    print("Notion API Response:", response.json())
+    if response.status_code == 200:
+        return redirect(url_for('index'))
+    else:
+        # In a real-world application, better error handling and logging should be implemented.
+        return "Error adding todo.", 500
 
 
 @app.route('/delete_todo', methods=['POST'])
 def delete_todo():
-    id = int(request.form.get('id'))  # 從請求中獲取待辦事項的ID
-    global todos
-    # 從清單中刪除指定的待辦事項
-    # debug
-    print("Received delete request for todo ID:", id)
-    todos = [todo for todo in todos if todo['id'] != id]
+    todo_id = request.form.get('id')
+    archive_url = f"https://api.notion.com/v1/pages/{todo_id}"
+    response = requests.patch(
+        archive_url, headers=HEADERS, json={"archived": True})
     return jsonify(success=True)
-
-
-# 路由和函數來標記指定的待辦事項為已完成
 
 
 @app.route('/complete_todo', methods=['POST'])
 def complete_todo():
-    id = int(request.form.get('id'))  # 從請求中獲取待辦事項的ID
-    for todo in todos:
-        if todo['id'] == id:
-            todo['completed'] = True  # 標記為已完成
-            break
-    return jsonify(success=True)
-
-# 路由和函數來獲取所有待辦事項
-
-
-@app.route('/get_todos', methods=['GET'])
-def get_todos():
-    return jsonify(todos)
-
-# 更新待辦事項
-
-
-@app.route('/update_todo', methods=['POST'])
-def update_todo():
-    id = int(request.form.get('id'))
-    field = request.form.get('field')
-    value = request.form.get('value')
-
-    for todo in todos:
-        if todo['id'] == id:
-            todo[field] = value
-            break
-
+    todo_id = request.form.get('id')
+    update_url = f"https://api.notion.com/v1/pages/{todo_id}"
+    response = requests.patch(update_url, headers=HEADERS, json={
+                              "properties": {"Completed": {"checkbox": True}}})
     return jsonify(success=True)
 
 
-# 啟動Flask伺服器
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
