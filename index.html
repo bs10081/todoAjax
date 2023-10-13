@@ -47,13 +47,24 @@
         <h1 class="center-align teal-text text-darken-3">待辦事項</h1>
 
         <div class="row card-panel">
-            <div class="input-field col s10">
+            <div class="input-field col s6">
                 <input type="text" id="todoInput" placeholder="輸入待辦事項">
             </div>
-            <div class="input-field col">
-                <button class="btn waves-effect waves-light teal darken-3 right" onclick="addTodo()">新增</button>
+            <div class="input-field col s3">
+                <input type="text" class="datepicker" id="todoDate" placeholder="選擇日期">
+            </div>
+            <div class="input-field col s2">
+                <select id="todoUrgency">
+                    <option value="1">!</option>
+                    <option value="2">!!</option>
+                    <option value="3">!!!</option>
+                </select>
+            </div>
+            <div class="input-field col s3">
+                <button class="btn waves-effect waves-light teal darken-3 left" onclick="addTodo()">新增</button>
             </div>
         </div>
+
 
 
         <div class="card">

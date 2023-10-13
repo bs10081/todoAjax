@@ -29,14 +29,20 @@ def serve_static(filename):
 @app.route('/add_todo', methods=['POST'])
 def add_todo():
     global id_counter
-    text = request.form.get('text')  # 從請求中獲取待辦事項的內容
+    text = request.form.get('text')
+    date = request.form.get('date')
+    urgency = request.form.get('urgency')
+
     todos.append({
-        'id': id_counter,  # 分配一個唯一的ID
+        'id': id_counter,
         'text': text,
-        'completed': False  # 初始狀態為未完成
+        'date': date,
+        'urgency': urgency,
+        'completed': False
     })
     id_counter += 1
     return jsonify(success=True)
+
 
 # 路由和函數來刪除指定的待辦事項
 
