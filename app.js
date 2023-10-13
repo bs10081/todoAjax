@@ -33,15 +33,34 @@ function fetchTodos() {
         let completeHtml = ''; // 已完成的 todo 項目的 HTML 字串
 
         for (let todo of data) {
+            let urgencyTag = ''; // 初始化緊急程度標籤
+
             if (todo.completed) { // 如果 todo 項目已完成
+                if (todo.urgency === '1') {
+                    urgencyTag = '!';
+                } else if (todo.urgency === '2') {
+                    urgencyTag = '!!';
+                } else if (todo.urgency === '3') {
+                    urgencyTag = '!!!';
+                }
+
                 completeHtml += `<li class="collection-item">${todo.text} 
+                                 <span class="grey-text">(${todo.date})</span> <span class="badge">${urgencyTag}</span>
                                  <a href="#!" class="secondary-content">
                                      <i class="material-icons red-text delete-todo-btn" data-todo-id="${todo.id}">delete</i>
                                  </a>
                                  </li>`;
             } else { // 如果 todo 項目未完成
+                if (todo.urgency === '1') {
+                    urgencyTag = '!';
+                } else if (todo.urgency === '2') {
+                    urgencyTag = '!!';
+                } else if (todo.urgency === '3') {
+                    urgencyTag = '!!!';
+                }
+
                 incompleteHtml += `<li class="collection-item">${todo.text} 
-                                   <span class="grey-text">(${todo.date})</span>
+                                   <span class="grey-text">(${todo.date})</span> <span class="badge">${urgencyTag}</span>
                                    <a href="#!" class="secondary-content">
                                        <i class="material-icons green-text complete-todo-btn" data-todo-id="${todo.id}">check</i>
                                    </a>
