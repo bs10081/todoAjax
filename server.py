@@ -49,7 +49,8 @@ def get_todos():
 def add_todo():
     # Extracting data from the form
     text = request.form.get('text')
-    date = datetime.datetime.strptime(request.form.get('date'), "%b %d, %Y").date().isoformat()
+    date = datetime.datetime.strptime(
+        request.form.get('date'), "%b %d, %Y").date().isoformat()
     urgency = request.form.get('urgency')
 
     # Constructing the payload for the Notion API
@@ -82,8 +83,25 @@ def add_todo():
     )
 
     # Check if the request was successful
-    print("Notion API Response:", response.json())
     if response.status_code == 200:
+        # Extract the ID of the newly created page from the response
+        new_page_id = response.json().get('id')
+
+        # Update the ID field of the newly created page with its page ID
+        update_data = {
+            "properties": {
+                "ID": {
+                    "type": "title",
+                    "title": [{"type": "text", "text": {"content": new_page_id}}]
+                }
+            }
+        }
+        update_response = requests.patch(
+            f"https://api.notion.com/v1/pages/{new_page_id}",
+            headers=HEADERS,
+            json=update_data
+        )
+
         return redirect(url_for('index'))
     else:
         # In a real-world application, better error handling and logging should be implemented.
