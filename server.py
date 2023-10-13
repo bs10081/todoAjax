@@ -52,8 +52,11 @@ def delete_todo():
     id = int(request.form.get('id'))  # 從請求中獲取待辦事項的ID
     global todos
     # 從清單中刪除指定的待辦事項
+    # debug
+    print("Received delete request for todo ID:", id)
     todos = [todo for todo in todos if todo['id'] != id]
     return jsonify(success=True)
+
 
 # 路由和函數來標記指定的待辦事項為已完成
 
@@ -73,6 +76,22 @@ def complete_todo():
 @app.route('/get_todos', methods=['GET'])
 def get_todos():
     return jsonify(todos)
+
+# 更新待辦事項
+
+
+@app.route('/update_todo', methods=['POST'])
+def update_todo():
+    id = int(request.form.get('id'))
+    field = request.form.get('field')
+    value = request.form.get('value')
+
+    for todo in todos:
+        if todo['id'] == id:
+            todo[field] = value
+            break
+
+    return jsonify(success=True)
 
 
 # 啟動Flask伺服器

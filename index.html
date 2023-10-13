@@ -60,12 +60,10 @@
                     <option value="3">!!!</option>
                 </select>
             </div>
-            <div class="input-field col s3">
-                <button class="btn waves-effect waves-light teal darken-3 left" onclick="addTodo()">新增</button>
+            <div class="input-field col s1">
+                <button class="btn waves-effect waves-light teal darken-3" onclick="addTodo()">新增</button>
             </div>
         </div>
-
-
 
         <div class="card">
             <div class="card-content">
@@ -77,7 +75,14 @@
         <div class="card">
             <div class="card-content">
                 <span class="card-title teal-text text-darken-3">已完成事項</span>
-                <ul id="completedTodos" class="collection"></ul>
+                <ul id="completedTodos" class="collection">
+                    <li class="collection-item">
+                        ${todo.text}
+                        <a href="#!" class="secondary-content" onclick="deleteTodo(${todo.id})">
+                            <i class="material-icons red-text">delete</i>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
 

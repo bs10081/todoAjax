@@ -18,6 +18,14 @@ function addTodo() {
     });
 }
 
+// 刪除待辦事項的函數
+function deleteTodo(id) {
+    // 發送AJAX POST請求到後端，刪除指定的待辦事項
+    $.post('/delete_todo', { id: id }, function (data) {
+        fetchTodos();  // 重新獲取待辦事項清單
+    });
+}
+
 function fetchTodos() {
     $.get('/get_todos', function (data) {
         let incompleteHtml = ''; // 未完成的 todo 項目的 HTML 字串
@@ -52,10 +60,21 @@ function completeTodo(id) {
     $.post('/complete_todo', { id: id }, function (data) {
         fetchTodos(); // 呼叫 fetchTodos 函式更新 todo 清單
     });
+    $('.todo-text').on('blur', function () {
+        let id = $(this).parent().data('id');
+        let newText = $(this).text();
+        updateTodo(id, 'text', newText);
+    });
+
+    $('.todo-date').on('blur', function () {
+        let id = $(this).parent().data('id');
+        let newDate = $(this).text().replace(/[\(\)]/g, ''); // 移除括號
+        updateTodo(id, 'date', newDate);
+    });
 }
 
-function deleteTodo(id) {
-    $.post('/delete_todo', { id: id }, function (data) {
-        fetchTodos(); // 呼叫 fetchTodos 函式更新 todo 清單
+function updateTodo(id, field, value) {
+    $.post('/update_todo', { id: id, field: field, value: value }, function (data) {
+        fetchTodos();
     });
 }
