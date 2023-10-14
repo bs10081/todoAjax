@@ -60,7 +60,7 @@
                     <option value="3">!!!</option>
                 </select>
             </div>
-            <div class="input-field col s1">
+            <div class="input-field col s2">
                 <button class="btn waves-effect waves-light teal darken-3" onclick="addTodo()">新增</button>
             </div>
         </div>
@@ -89,6 +89,27 @@
     </div>
 
     <script src="app.js"></script>
-</body>
 
-</html>
+    <!-- Edit Modal Structure -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h4>編輯待辦事項</h4>
+            <div class="input-field">
+                <input type="text" id="editTodoInput" placeholder="輸入待辦事項">
+            </div>
+            <div class="input-field">
+                <input type="text" class="datepicker" id="editTodoDate" placeholder="選擇日期">
+            </div>
+            <div class="input-field">
+                <select id="editTodoUrgency">
+                    <option value="1">!</option>
+                    <option value="2">!!</option>
+                    <option value="3">!!!</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" onclick="editTodo()" class="modal-close waves-effect waves-green btn-flat">確定</a>
+        </div>
+    </div>
+</body>

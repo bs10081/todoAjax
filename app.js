@@ -46,11 +46,14 @@ function fetchTodos() {
 
                 completeHtml += `<li class="collection-item">${todo.text} 
                                  <span class="grey-text">(${todo.date})</span> <span class="badge">${urgencyTag}</span>
+                                 <a href="#!" onclick="openEditModal('${todo.id}', '${todo.text}', '${todo.date}', '${urgencyTag}')" class="secondary-content"
+                                     <i class="material-icons teal-text">edit</i>
+                                 </a>
                                  <a href="#!" class="secondary-content">
                                      <i class="material-icons red-text delete-todo-btn" data-todo-id="${todo.id}">delete</i>
                                  </a>
                                  </li>`;
-            } else { // 如果 todo 項目未完成
+            } else { // 如果 todo 項目未完成 
                 if (todo.urgency === '1') {
                     urgencyTag = '!';
                 } else if (todo.urgency === '2') {
@@ -61,6 +64,9 @@ function fetchTodos() {
 
                 incompleteHtml += `<li class="collection-item">${todo.text} 
                                    <span class="grey-text">(${todo.date})</span> <span class="badge">${urgencyTag}</span>
+                                   <a href="#!" onclick="openEditModal('${todo.id}', '${todo.text}', '${todo.date}', '${urgencyTag}')" class="secondary-content"
+                                     <i class="material-icons teal-text">edit</i>
+                                   </a>
                                    <a href="#!" class="secondary-content">
                                        <i class="material-icons green-text complete-todo-btn" data-todo-id="${todo.id}">check</i>
                                    </a>
@@ -113,4 +119,26 @@ document.querySelector(".container").addEventListener("click", function (e) {
     }
 });
 
+function openEditModal(id, text, date, urgency) {
+    $('#editModal').modal('open');
+    $('#editTodoInput').val(text);
+    $('#editTodoDate').val(date);
+    $('#editTodoUrgency').val(urgency);
+    $('#editTodoInput').data('id', id);  // Store the todo id for later use
+}
 
+function editTodo() {
+    let todoId = $('#editTodoInput').data('id');
+    let todoText = $('#editTodoInput').val();
+    let todoDate = $('#editTodoDate').val();
+    let todoUrgency = $('#editTodoUrgency').val();
+
+    $.post('/edit_todo', { id: todoId, text: todoText, date: todoDate, urgency: todoUrgency }, function (data) {
+        if (data.success) {
+            fetchTodos(); // Refresh the todos list
+        } else {
+            alert('Error editing todo: ' + data.message);
+        }
+    });
+}
+$(document).ready(function () { $('#editModal').modal(); });

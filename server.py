@@ -117,6 +117,43 @@ def delete_todo():
     return jsonify(success=True)
 
 
+@app.route('/edit_todo', methods=['POST'])
+def edit_todo():
+    todo_id = request.form.get('id')
+    text = request.form.get('text')
+    date = datetime.datetime.strptime(
+        request.form.get('date'), "%b %d, %Y").date().isoformat()
+    urgency = request.form.get('urgency')
+    print(todo_id, text, date, urgency)
+    # Constructing the payload for the Notion API
+    data = {
+        "properties": {
+            "Text": {
+                "type": "rich_text",
+                "rich_text": [{"type": "text", "text": {"content": text}}]
+            },
+            "Date": {
+                "type": "date",
+                "date": {"start": date}
+            },
+            "Urgency": {
+                "type": "select",
+                "select": {"name": urgency}
+            }
+        }
+    }
+
+    update_url = f"https://api.notion.com/v1/pages/{todo_id}"
+    response = requests.patch(update_url, headers=HEADERS, json=data)
+    print(response.json())
+    # Check if the request was successful
+    if response.status_code == 200:
+        return jsonify(success=True)
+    else:
+        # In a real-world application, better error handling and logging should be implemented.
+        return jsonify(success=False, message="Error updating todo."), 500
+
+
 @app.route('/complete_todo', methods=['POST'])
 def complete_todo():
     todo_id = request.form.get('id')
