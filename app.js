@@ -46,7 +46,7 @@ function fetchTodos() {
 
                 completeHtml += `<li class="collection-item">${todo.text} 
                                  <span class="grey-text">(${todo.date})</span> <span class="badge">${urgencyTag}</span>
-                                 <a href="#!" onclick="openEditModal('${todo.id}', '${todo.text}', '${todo.date}', '${urgencyTag}')" class="secondary-content"
+                                 <a href="#!" onclick="openEditModal('${todo.id}', '${todo.text}', '${todo.date}', '${urgencyTag}')" class="secondary-content">
                                      <i class="material-icons teal-text">edit</i>
                                  </a>
                                  <a href="#!" class="secondary-content">
@@ -64,7 +64,7 @@ function fetchTodos() {
 
                 incompleteHtml += `<li class="collection-item">${todo.text} 
                                    <span class="grey-text">(${todo.date})</span> <span class="badge">${urgencyTag}</span>
-                                   <a href="#!" onclick="openEditModal('${todo.id}', '${todo.text}', '${todo.date}', '${urgencyTag}')" class="secondary-content"
+                                   <a href="#!" onclick="openEditModal('${todo.id}', '${todo.text}', '${todo.date}', '${urgencyTag}')" class="secondary-content">
                                      <i class="material-icons teal-text">edit</i>
                                    </a>
                                    <a href="#!" class="secondary-content">
