@@ -4,6 +4,7 @@ $(document).ready(function () {
     $('select').formSelect(); // 初始化所有 select 元素
 });
 
+// 新增 todo 項目的函數
 function addTodo() {
     let todoText = $('#todoInput').val(); // 取得 id 為 todoInput 的 input 元素的值
     let todoDate = $('#todoDate').val(); // 取得 id 為 todoDate 的 input 元素的值
@@ -27,6 +28,7 @@ function deleteTodo(id) {
     });
 }
 
+// 獲取待辦事項清單的函數
 function fetchTodos() {
     $.get('/get_todos', function (data) {
         let incompleteHtml = ''; // 未完成的 todo 項目的 HTML 字串
@@ -83,7 +85,7 @@ function fetchTodos() {
 }
 
 
-
+// 完成待辦事項的函數
 function completeTodo(id) {
     console.log('completeTodo function called with ID:', id);
     $.post('/complete_todo', { id: id }, function (data) {
@@ -119,6 +121,7 @@ document.querySelector(".container").addEventListener("click", function (e) {
     }
 });
 
+// 開啟編輯待辦事項的 Modal 的函數
 function openEditModal(id, text, date, urgency) {
     $('#editModal').modal('open');
     $('#editTodoInput').val(text);
@@ -127,6 +130,7 @@ function openEditModal(id, text, date, urgency) {
     $('#editTodoInput').data('id', id);  // Store the todo id for later use
 }
 
+// 編輯待辦事項的函數
 function editTodo() {
     let todoId = $('#editTodoInput').data('id');
     let todoText = $('#editTodoInput').val();

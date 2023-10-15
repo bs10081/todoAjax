@@ -5,6 +5,7 @@ import requests
 
 app = Flask(__name__)
 
+
 # Notion configurations
 NOTION_API_KEY = "secret_qWipKJbYLrOfeFo2XPRYzuz6yX2jNp431R8nCpzlAtB"
 NOTION_DATABASE_URL = "https://api.notion.com/v1/databases/b699c73e35614a4cbffa96da27769f3a/query"
