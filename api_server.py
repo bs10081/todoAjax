@@ -1,8 +1,9 @@
-
 from flask import Flask, jsonify, request
+from flask_cors import CORS  # <-- Import this
 from notion_crud import NotionCRUD
 
 app = Flask(__name__)
+CORS(app)  # <-- Add this to enable CORS for all routes
 notion = NotionCRUD(
     "secret_qWipKJbYLrOfeFo2XPRYzuz6yX2jNp431R8nCpzlAtB", "https://api.notion.com/v1/databases/b699c73e35614a4cbffa96da27769f3a/query")
 
@@ -14,6 +15,7 @@ def get_todos():
 
 @app.route('/todos', methods=['POST'])
 def create_todo():
+    print(request.get_json())
     data = request.get_json()
     text = data.get('text')
     completed = data.get('completed', False)

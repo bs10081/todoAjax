@@ -32,6 +32,9 @@ export default {
     },
     methods: {
         async addTodo() {
+
+            console.log(this.newTodo);
+
             const response = await axios.post('/todos', { text: this.newTodo });
             this.todos.push(response.data);
             this.newTodo = '';
